@@ -50,6 +50,7 @@ export const PLAYLISTS: PlaylistConfigEntry[] = [
   { name: "Pop en Inglés", spotifyId: "4Xwv0G0uD9WK6YCyq7MKw7" },
   { name: "Pop Punk 2000s", spotifyId: "1jQx9cBFAsfnMV0tckNMQz" },
   { name: "Rock Español", spotifyId: "6AD1HeEUnZ3UQuN5eJw2Tz" },
+  { name: "Mix Rock", spotifyId: "5W2RZZe2gIphtFMdlPIVfN" },
   { name: "Indie España (Tops)", spotifyId: "6KjqKC4kLWUHaczO1zBkVd" },
   { name: "Indie España 2026", spotifyId: "0FRtJINEiR9aBhfKD1OM47" },
   { name: "Rap Español (Míticas y Nuevas)", spotifyId: "2UktWVOkzrX0732If5Tjc2" },
