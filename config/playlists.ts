@@ -4,7 +4,8 @@ import type { PlaylistConfigEntry } from "@/lib/types";
 // THE MUSIC GAME — catalogo de playlists
 // ---------------------------------------------------------------------------
 // Edita este array para anadir, quitar o renombrar las playlists que
-// aparecen en la pantalla de seleccion del juego.
+// aparecen en la pantalla de seleccion del juego. El ORDEN del array es el
+// orden en que se muestran en la app.
 //
 //   name       -> lo que se muestra en la app (puedes ponerle el nombre que
 //                 quieras, no tiene por que coincidir con el de Spotify).
@@ -20,7 +21,41 @@ import type { PlaylistConfigEntry } from "@/lib/types";
 // ---------------------------------------------------------------------------
 
 export const PLAYLISTS: PlaylistConfigEntry[] = [
-  { name: "Fiesta 2000s", spotifyId: "37i9dQZF1DX4o1oenSJRJd" },
-  { name: "Grandes Exitos 80s", spotifyId: "37i9dQZF1DXb57FjYWz00c" },
-  { name: "Rock Clasico", spotifyId: "37i9dQZF1DWXRqgorJj26U" },
+  // --- Generales: primera eleccion, valen para cualquier grupo -------------
+  { name: "Hitster España (temazos variados)", spotifyId: "1C3NDNNfg6c0SlPhyikGVU" },
+  { name: "Hitster Temazos", spotifyId: "20kxyNTykQPlbmt15fiPqY" },
+  { name: "Hitster US (100%)", spotifyId: "6lEEWbPCGtS3425Z9ub1pn" },
+  { name: "60s", spotifyId: "37i9dQZF1DXaKIA8E7WcJj" },
+  { name: "70s", spotifyId: "37i9dQZF1DWTJ7xPn4vNaz" },
+  { name: "80s", spotifyId: "37i9dQZF1DX4UtSsGT1Sbe" },
+  { name: "90s", spotifyId: "37i9dQZF1DXbTxeAdrVG2l" },
+  { name: "2000s", spotifyId: "37i9dQZF1DX4o1oenSJRJd" },
+  { name: "2010s", spotifyId: "37i9dQZF1DX5Ejj0EkURtP" },
+  { name: "2020s", spotifyId: "37i9dQZF1DX2M1RktxUUHG" },
+
+  // --- Específicas: España por época -----------------------------------
+  { name: "España — Grandes Éxitos de Siempre (Top 200)", spotifyId: "7FcjbxLUFb3xUHUUXZbV4n" },
+  { name: "España — Top 2000", spotifyId: "0n0JVWNy6uFhHpL0GNiReL" },
+  { name: "España — Clásicos 2000", spotifyId: "37i9dQZF1DX7alvT6zKWrM" },
+  { name: "España — 2010", spotifyId: "6O8n2zKuiKEThRM2gQcFY3" },
+
+  // --- Específicas: género -----------------------------------------------
+  { name: "Pop en Inglés", spotifyId: "4Xwv0G0uD9WK6YCyq7MKw7" },
+  { name: "Pop Punk 2000s", spotifyId: "1jQx9cBFAsfnMV0tckNMQz" },
+  { name: "Rock Español", spotifyId: "6AD1HeEUnZ3UQuN5eJw2Tz" },
+  { name: "Indie España (Tops)", spotifyId: "6KjqKC4kLWUHaczO1zBkVd" },
+  { name: "Indie España 2026", spotifyId: "0FRtJINEiR9aBhfKD1OM47" },
+  { name: "Rap Español (Míticas y Nuevas)", spotifyId: "2UktWVOkzrX0732If5Tjc2" },
+  { name: "Rap Temazos", spotifyId: "3Sy73vREOP0IRlXKNJsDtB" },
+  { name: "Rap Tranquilo", spotifyId: "3QCRydncYscMQwAGMgSV6Z" },
+  { name: "Clásicos Hip Hop Latino", spotifyId: "37i9dQZF1DX7oE1ZquUHSd" },
+  { name: "Reggaetón (Top 50)", spotifyId: "7jxz5GHDsfOa6rDAHMp5VO" },
+
+  // --- Específicas: fiesta / ambiente --------------------------------------
+  { name: "Hitster Español Summer Party", spotifyId: "0UY3oVANXRqflE5QjHhaH4" },
+  { name: "Verbena", spotifyId: "1eRhuNzRHhwZLkOrYpxStj" },
+  { name: "Fiestas de Pueblo", spotifyId: "7xcdrzs58PmLIZa4P5Qk3s" },
+  { name: "Caseta (Feria)", spotifyId: "1uesUIRBzbSHIsH3O7I2iS" },
+  { name: "De Trankis", spotifyId: "5owsQN6049lhhHsrmxID7p" },
+  { name: "Inglés Tranki", spotifyId: "7BOBmVzKyN5pIxRsL8ul4k" },
 ];
