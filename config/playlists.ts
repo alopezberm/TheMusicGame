@@ -17,6 +17,13 @@ import type { PlaylistConfigEntry } from "@/lib/types";
 //                                                    ^^^^^^^^^^^^^^^^^^^^^^
 //                                                    esto es el spotifyId
 //
+// OJO: las playlists "editoriales" oficiales de Spotify (las que tienen un
+// ID largo con el prefijo "37i9dQZF1DX...") NO funcionan aqui — la API de
+// Spotify las bloquea para apps normales (da igual el token o el codigo,
+// siempre devuelve 404). Si quieres una de esas, primero tienes que
+// duplicarla en una playlist tuya (seleccionar todas las canciones -> anadir
+// a una playlist nueva) y usar el ID de tu copia, que si es un ID normal.
+//
 // Guarda el archivo y listo, no hace falta tocar nada mas.
 // ---------------------------------------------------------------------------
 
@@ -25,18 +32,21 @@ export const PLAYLISTS: PlaylistConfigEntry[] = [
   { name: "Hitster España (temazos variados)", spotifyId: "1C3NDNNfg6c0SlPhyikGVU" },
   { name: "Hitster Temazos", spotifyId: "20kxyNTykQPlbmt15fiPqY" },
   { name: "Hitster US (100%)", spotifyId: "6lEEWbPCGtS3425Z9ub1pn" },
-  { name: "60s", spotifyId: "37i9dQZF1DXaKIA8E7WcJj" },
-  { name: "70s", spotifyId: "37i9dQZF1DWTJ7xPn4vNaz" },
-  { name: "80s", spotifyId: "37i9dQZF1DX4UtSsGT1Sbe" },
-  { name: "90s", spotifyId: "37i9dQZF1DXbTxeAdrVG2l" },
-  { name: "2000s", spotifyId: "37i9dQZF1DX4o1oenSJRJd" },
-  { name: "2010s", spotifyId: "37i9dQZF1DX5Ejj0EkURtP" },
-  { name: "2020s", spotifyId: "37i9dQZF1DX2M1RktxUUHG" },
+  // Las siguientes 6 (60s-2020s) son playlists editoriales de Spotify y por
+  // ahora NO funcionan (ver nota de arriba). Duplícalas a tu cuenta y pon
+  // aquí el ID de tu copia para reactivarlas.
+  // { name: "60s", spotifyId: "37i9dQZF1DXaKIA8E7WcJj" },
+  // { name: "70s", spotifyId: "37i9dQZF1DWTJ7xPn4vNaz" },
+  // { name: "80s", spotifyId: "37i9dQZF1DX4UtSsGT1Sbe" },
+  // { name: "90s", spotifyId: "37i9dQZF1DXbTxeAdrVG2l" },
+  // { name: "2000s", spotifyId: "37i9dQZF1DX4o1oenSJRJd" },
+  // { name: "2010s", spotifyId: "37i9dQZF1DX5Ejj0EkURtP" },
+  // { name: "2020s", spotifyId: "37i9dQZF1DX2M1RktxUUHG" },
 
   // --- Específicas: España por época -----------------------------------
   { name: "España — Grandes Éxitos de Siempre (Top 200)", spotifyId: "7FcjbxLUFb3xUHUUXZbV4n" },
   { name: "España — Top 2000", spotifyId: "0n0JVWNy6uFhHpL0GNiReL" },
-  { name: "España — Clásicos 2000", spotifyId: "37i9dQZF1DX7alvT6zKWrM" },
+  // { name: "España — Clásicos 2000", spotifyId: "37i9dQZF1DX7alvT6zKWrM" }, // editorial, ver nota
   { name: "España — 2010", spotifyId: "6O8n2zKuiKEThRM2gQcFY3" },
 
   // --- Específicas: género -----------------------------------------------
@@ -48,7 +58,7 @@ export const PLAYLISTS: PlaylistConfigEntry[] = [
   { name: "Rap Español (Míticas y Nuevas)", spotifyId: "2UktWVOkzrX0732If5Tjc2" },
   { name: "Rap Temazos", spotifyId: "3Sy73vREOP0IRlXKNJsDtB" },
   { name: "Rap Tranquilo", spotifyId: "3QCRydncYscMQwAGMgSV6Z" },
-  { name: "Clásicos Hip Hop Latino", spotifyId: "37i9dQZF1DX7oE1ZquUHSd" },
+  // { name: "Clásicos Hip Hop Latino", spotifyId: "37i9dQZF1DX7oE1ZquUHSd" }, // editorial, ver nota
   { name: "Reggaetón (Top 50)", spotifyId: "7jxz5GHDsfOa6rDAHMp5VO" },
 
   // --- Específicas: fiesta / ambiente --------------------------------------
