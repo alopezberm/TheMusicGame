@@ -2,8 +2,9 @@ import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 
 // Temporary: inspect the actual current shape of Spotify's playlist response
-// — the "tracks" wrapper we assumed no longer seems to exist. Keeps the
-// output small (no full track list) so it's easy to copy-paste.
+// — the "tracks" wrapper we assumed no longer seems to exist, and "items" at
+// the top level turned out not to be an array — probably the paging object
+// itself (renamed from "tracks" to "items"). Drilling one level deeper.
 export async function GET() {
   const session = await auth();
   if (!session?.accessToken) {
@@ -16,23 +17,17 @@ export async function GET() {
   });
   const json = await raw.json();
 
-  const items = json.items ?? json.tracks?.items ?? null;
+  const wrapper = json.items;
+  const innerItems = wrapper?.items ?? null;
 
   return NextResponse.json({
-    topLevelKeys: Object.keys(json),
-    hasTracksWrapper: "tracks" in json,
-    tracksWrapperKeys: json.tracks ? Object.keys(json.tracks) : null,
-    itemsIsArray: Array.isArray(items),
-    itemsLength: Array.isArray(items) ? items.length : null,
-    firstItemKeys:
-      Array.isArray(items) && items[0] ? Object.keys(items[0]) : null,
-    firstItemSample: Array.isArray(items) ? items[0] : null,
-    paginationHints: {
-      next: json.next ?? null,
-      previous: json.previous ?? null,
-      total: json.total ?? null,
-      limit: json.limit ?? null,
-      offset: json.offset ?? null,
-    },
+    typeOfTopLevelItems: typeof wrapper,
+    wrapperKeys: wrapper && typeof wrapper === "object" ? Object.keys(wrapper) : null,
+    wrapperTotal: wrapper?.total ?? null,
+    innerItemsIsArray: Array.isArray(innerItems),
+    innerItemsLength: Array.isArray(innerItems) ? innerItems.length : null,
+    firstInnerItemKeys:
+      Array.isArray(innerItems) && innerItems[0] ? Object.keys(innerItems[0]) : null,
+    firstInnerItemSample: Array.isArray(innerItems) ? innerItems[0] : null,
   });
 }
