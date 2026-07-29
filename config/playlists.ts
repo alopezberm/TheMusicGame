@@ -32,16 +32,13 @@ export const PLAYLISTS: PlaylistConfigEntry[] = [
   { name: "Hitster España (temazos variados)", spotifyId: "1C3NDNNfg6c0SlPhyikGVU" },
   { name: "Hitster Temazos", spotifyId: "20kxyNTykQPlbmt15fiPqY" },
   { name: "Hitster US (100%)", spotifyId: "6lEEWbPCGtS3425Z9ub1pn" },
-  // Las siguientes 6 (60s-2020s) son playlists editoriales de Spotify y por
-  // ahora NO funcionan (ver nota de arriba). Duplícalas a tu cuenta y pon
-  // aquí el ID de tu copia para reactivarlas.
-  // { name: "60s", spotifyId: "37i9dQZF1DXaKIA8E7WcJj" },
-  // { name: "70s", spotifyId: "37i9dQZF1DWTJ7xPn4vNaz" },
-  // { name: "80s", spotifyId: "37i9dQZF1DX4UtSsGT1Sbe" },
-  // { name: "90s", spotifyId: "37i9dQZF1DXbTxeAdrVG2l" },
+  { name: "60s", spotifyId: "3R2vm6wOGrJfhUFtfKy3EL" }, // copia propia
+  { name: "70s", spotifyId: "4dQKdsRBcgkBf7pHeHIqmV" }, // copia propia
+  { name: "80s", spotifyId: "1ZUF6yc07BAAub0N5gNT7o" }, // copia propia
+  { name: "90s", spotifyId: "2V0IhSDAgqIEw7Uvjbc6sm" }, // copia propia
   { name: "2000s", spotifyId: "1ofO5TzI5x4A82z2MLYHaw" }, // copia propia
-  // { name: "2010s", spotifyId: "37i9dQZF1DX5Ejj0EkURtP" },
-  // { name: "2020s", spotifyId: "37i9dQZF1DX2M1RktxUUHG" },
+  { name: "2010s", spotifyId: "5gFgkG2j8kf8LRRc3XlvW4" }, // copia propia
+  { name: "2020s", spotifyId: "4dY9hw3ef6fGI2jiY2KKmO" }, // copia propia
 
   // --- Específicas: España por época -----------------------------------
   { name: "España — Grandes Éxitos de Siempre (Top 200)", spotifyId: "7FcjbxLUFb3xUHUUXZbV4n" },
