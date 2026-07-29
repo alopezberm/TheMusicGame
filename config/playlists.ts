@@ -39,7 +39,7 @@ export const PLAYLISTS: PlaylistConfigEntry[] = [
   // { name: "70s", spotifyId: "37i9dQZF1DWTJ7xPn4vNaz" },
   // { name: "80s", spotifyId: "37i9dQZF1DX4UtSsGT1Sbe" },
   // { name: "90s", spotifyId: "37i9dQZF1DXbTxeAdrVG2l" },
-  // { name: "2000s", spotifyId: "37i9dQZF1DX4o1oenSJRJd" },
+  { name: "2000s", spotifyId: "1ofO5TzI5x4A82z2MLYHaw" }, // copia propia
   // { name: "2010s", spotifyId: "37i9dQZF1DX5Ejj0EkURtP" },
   // { name: "2020s", spotifyId: "37i9dQZF1DX2M1RktxUUHG" },
 

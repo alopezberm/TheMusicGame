@@ -10,16 +10,22 @@ import { LoadingState } from "@/components/LoadingState";
 export default function SelectPage() {
   const { data: session, status } = useSession();
   const [playlists, setPlaylists] = useState<PlaylistOption[] | null>(null);
+  // TEMP: capture the raw browser-side error per playlist for debugging.
+  const [debugErrors, setDebugErrors] = useState<{ name: string; error: string }[]>([]);
 
   useEffect(() => {
     if (status !== "authenticated" || !session?.accessToken) return;
     let cancelled = false;
 
     (async () => {
+      const errors: { name: string; error: string }[] = [];
       const metas = await Promise.all(
         PLAYLISTS.map(async (p) => {
           const meta = await getPlaylistMeta(p.spotifyId, session.accessToken!).catch(
-            () => null
+            (err) => {
+              errors.push({ name: p.name, error: String(err) });
+              return null;
+            }
           );
           return {
             spotifyId: p.spotifyId,
@@ -28,7 +34,10 @@ export default function SelectPage() {
           };
         })
       );
-      if (!cancelled) setPlaylists(metas);
+      if (!cancelled) {
+        setPlaylists(metas);
+        setDebugErrors(errors);
+      }
     })();
 
     return () => {
@@ -63,6 +72,17 @@ export default function SelectPage() {
       </header>
 
       <PlaylistPicker playlists={playlists} />
+
+      {debugErrors.length > 0 ? (
+        <div className="space-y-1 rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-xs text-red-200">
+          <p className="font-semibold">DEBUG temporal — errores reales:</p>
+          {debugErrors.map((e, i) => (
+            <p key={i} className="break-all">
+              {e.name}: {e.error}
+            </p>
+          ))}
+        </div>
+      ) : null}
 
       <button
         type="button"
