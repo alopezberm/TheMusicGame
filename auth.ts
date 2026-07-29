@@ -45,6 +45,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       clientId: process.env.AUTH_SPOTIFY_ID,
       clientSecret: process.env.AUTH_SPOTIFY_SECRET,
       authorization: {
+        // Auth.js deep-merges this with the provider's built-in defaults, and
+        // a plain object here (without `url`) clobbers that default string
+        // entirely, so the full URL must be repeated explicitly.
+        url: "https://accounts.spotify.com/authorize",
         params: { scope: SCOPES },
       },
     }),
