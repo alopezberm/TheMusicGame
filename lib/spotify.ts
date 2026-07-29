@@ -45,16 +45,20 @@ export async function getPlaylistMeta(
   spotifyId: string,
   accessToken: string
 ): Promise<PlaylistMeta | null> {
-  const data = await spotifyFetch<{ id: string; name: string; tracks: { total: number } }>(
-    `/playlists/${spotifyId}?fields=id,name,tracks.total`,
+  // Spotify's playlist resource nests its track-paging object under "items"
+  // (it used to be called "tracks" — the field was renamed at some point).
+  const data = await spotifyFetch<{ id: string; name: string; items: { total: number } }>(
+    `/playlists/${spotifyId}?fields=id,name,items.total`,
     accessToken
   );
   if (!data) return null;
-  return { id: data.id, name: data.name, trackCount: data.tracks.total };
+  return { id: data.id, name: data.name, trackCount: data.items.total };
 }
 
 interface RawPlaylistTrackItem {
-  track: {
+  // Likewise, each paging entry's nested track object is now called "item"
+  // (it used to be called "track").
+  item: {
     id: string | null;
     uri: string;
     name: string;
@@ -76,7 +80,7 @@ export async function getAllPlaylistTracks(
   accessToken: string
 ): Promise<Track[]> {
   const tracks: Track[] = [];
-  let path: string | null = `/playlists/${spotifyId}/tracks?fields=items(track(id,uri,name,is_local,type,artists(name),external_ids,album(release_date))),next&limit=100`;
+  let path: string | null = `/playlists/${spotifyId}/tracks?fields=items(item(id,uri,name,is_local,type,artists(name),external_ids,album(release_date))),next&limit=100`;
 
   while (path) {
     const page: PlaylistTracksPage | null = await spotifyFetch<PlaylistTracksPage>(
@@ -85,8 +89,8 @@ export async function getAllPlaylistTracks(
     );
     if (!page) break;
 
-    for (const item of page.items) {
-      const t = item.track;
+    for (const entry of page.items) {
+      const t = entry.item;
       if (!t || t.is_local || t.type !== "track" || !t.id) continue;
       tracks.push({
         id: t.id,

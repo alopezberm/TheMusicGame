@@ -1,10 +1,8 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 
-// Temporary: inspect the actual current shape of Spotify's playlist response
-// — the "tracks" wrapper we assumed no longer seems to exist, and "items" at
-// the top level turned out not to be an array — probably the paging object
-// itself (renamed from "tracks" to "items"). Drilling one level deeper.
+// Temporary: verify the fixed fields= param works against the dedicated
+// /playlists/{id}/tracks endpoint too (not just the embedded one).
 export async function GET() {
   const session = await auth();
   if (!session?.accessToken) {
@@ -12,22 +10,17 @@ export async function GET() {
   }
 
   const id = "3R2vm6wOGrJfhUFtfKy3EL"; // Todo 60s
-  const raw = await fetch(`https://api.spotify.com/v1/playlists/${id}`, {
-    headers: { Authorization: `Bearer ${session.accessToken}` },
-  });
-  const json = await raw.json();
-
-  const wrapper = json.items;
-  const innerItems = wrapper?.items ?? null;
+  const res = await fetch(
+    `https://api.spotify.com/v1/playlists/${id}/tracks?fields=items(item(id,uri,name,is_local,type,artists(name),external_ids,album(release_date))),next&limit=3`,
+    { headers: { Authorization: `Bearer ${session.accessToken}` } }
+  );
+  const json = await res.json();
 
   return NextResponse.json({
-    typeOfTopLevelItems: typeof wrapper,
-    wrapperKeys: wrapper && typeof wrapper === "object" ? Object.keys(wrapper) : null,
-    wrapperTotal: wrapper?.total ?? null,
-    innerItemsIsArray: Array.isArray(innerItems),
-    innerItemsLength: Array.isArray(innerItems) ? innerItems.length : null,
-    firstInnerItemKeys:
-      Array.isArray(innerItems) && innerItems[0] ? Object.keys(innerItems[0]) : null,
-    firstInnerItemSample: Array.isArray(innerItems) ? innerItems[0] : null,
+    status: res.status,
+    topLevelKeys: Object.keys(json),
+    itemsLength: Array.isArray(json.items) ? json.items.length : null,
+    firstItem: json.items?.[0] ?? null,
+    next: json.next ?? null,
   });
 }
