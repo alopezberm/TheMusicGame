@@ -80,7 +80,8 @@ export async function getAllPlaylistTracks(
   accessToken: string
 ): Promise<Track[]> {
   const tracks: Track[] = [];
-  let path: string | null = `/playlists/${spotifyId}/tracks?fields=items(item(id,uri,name,is_local,type,artists(name),external_ids,album(release_date))),next&limit=100`;
+  // The dedicated tracks sub-resource is now called "items", not "tracks".
+  let path: string | null = `/playlists/${spotifyId}/items?fields=items(item(id,uri,name,is_local,type,artists(name),external_ids,album(release_date))),next&limit=100`;
 
   while (path) {
     const page: PlaylistTracksPage | null = await spotifyFetch<PlaylistTracksPage>(
