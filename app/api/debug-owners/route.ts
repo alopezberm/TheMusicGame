@@ -2,6 +2,10 @@ import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { PLAYLISTS } from "@/config/playlists";
 
+const EXTRA_TEST_PLAYLISTS = [
+  { name: "Top 200 temazos España (copia nueva)", spotifyId: "4wETXPBcj5KtBadKMrA9Cq" },
+];
+
 // Temporary: for every configured playlist, report its track count and
 // owner, and whether the owner is the signed-in user — to check whether
 // only self-owned playlists work.
@@ -17,7 +21,7 @@ export async function GET() {
   const me = await meRes.json();
 
   const results = await Promise.all(
-    PLAYLISTS.map(async (p) => {
+    [...PLAYLISTS, ...EXTRA_TEST_PLAYLISTS].map(async (p) => {
       const res = await fetch(
         `https://api.spotify.com/v1/playlists/${p.spotifyId}?fields=id,name,items.total,owner.id,owner.display_name,public,collaborative`,
         { headers: { Authorization: `Bearer ${session.accessToken}` } }
