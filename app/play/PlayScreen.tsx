@@ -80,8 +80,6 @@ export function PlayScreen() {
 
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [, bumpYearVersion] = useReducer((n: number) => n + 1, 0);
-  // TEMP: capture the real per-playlist fetch error for debugging.
-  const [debugErrors, setDebugErrors] = useState<string[]>([]);
 
   const accessToken = session?.accessToken;
 
@@ -131,12 +129,8 @@ export function PlayScreen() {
     let cancelled = false;
 
     (async () => {
-      const errors: string[] = [];
       const perPlaylist = await mapWithConcurrency(playlistIds, 5, (id) =>
-        getAllPlaylistTracks(id, accessToken).catch((err) => {
-          errors.push(`${id}: ${err}`);
-          return [];
-        })
+        getAllPlaylistTracks(id, accessToken).catch(() => [])
       );
       const merged = new Map<string, Track>();
       for (const list of perPlaylist) for (const t of list) merged.set(t.id, t);
@@ -145,7 +139,6 @@ export function PlayScreen() {
         setQueue(shuffled);
         setQueueIndex(0);
         setTracksLoading(false);
-        setDebugErrors(errors);
       }
     })();
 
@@ -239,16 +232,6 @@ export function PlayScreen() {
         <p className="text-white/50">
           Revisa que las playlists seleccionadas tengan canciones disponibles.
         </p>
-        {debugErrors.length > 0 ? (
-          <div className="mt-4 max-w-sm space-y-1 rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-left text-xs text-red-200">
-            <p className="font-semibold">DEBUG temporal:</p>
-            {debugErrors.map((e, i) => (
-              <p key={i} className="break-all">
-                {e}
-              </p>
-            ))}
-          </div>
-        ) : null}
       </main>
     );
   }
