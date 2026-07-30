@@ -80,8 +80,6 @@ export const PLAYLISTS: PlaylistConfigEntry[] = [
   { name: "Bandas Sonoras y Películas", spotifyId: "2F2ejuYpIHm2yQNuPbkrPg" },
 
   // --- Fiesta / ambiente --------------------------------------------------
-  { name: "Caseta (Feria)", spotifyId: "1uesUIRBzbSHIsH3O7I2iS" },
-  { name: "De Trankis", spotifyId: "5owsQN6049lhhHsrmxID7p" },
   { name: "Verbena (Mix)", spotifyId: "5ZOFcPMTs7y2YNlJ9ErJK4" },
   { name: "Verbena de Pueblo", spotifyId: "3PobPyF4k0qW7uxtTFkuKu" },
 ];

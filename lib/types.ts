@@ -3,12 +3,6 @@ export interface PlaylistConfigEntry {
   spotifyId: string;
 }
 
-export interface PlaylistMeta {
-  id: string;
-  name: string;
-  trackCount: number;
-}
-
 export interface Track {
   id: string;
   uri: string;

@@ -1,4 +1,4 @@
-import type { PlaylistMeta, SpotifyDevice, Track } from "@/lib/types";
+import type { SpotifyDevice, Track } from "@/lib/types";
 
 const API_BASE = "https://api.spotify.com/v1";
 
@@ -74,20 +74,6 @@ function yearFromReleaseDate(releaseDate: string | undefined): number | null {
   if (!releaseDate) return null;
   const year = parseInt(releaseDate.slice(0, 4), 10);
   return Number.isNaN(year) ? null : year;
-}
-
-export async function getPlaylistMeta(
-  spotifyId: string,
-  accessToken: string
-): Promise<PlaylistMeta | null> {
-  // Spotify's playlist resource nests its track-paging object under "items"
-  // (it used to be called "tracks" — the field was renamed at some point).
-  const data = await spotifyFetch<{ id: string; name: string; items: { total: number } }>(
-    `/playlists/${spotifyId}?fields=id,name,items.total`,
-    accessToken
-  );
-  if (!data) return null;
-  return { id: data.id, name: data.name, trackCount: data.items.total };
 }
 
 interface RawPlaylistTrackItem {

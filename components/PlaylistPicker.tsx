@@ -3,19 +3,14 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-
-export interface PlaylistOption {
-  spotifyId: string;
-  name: string;
-  trackCount: number | null;
-}
+import type { PlaylistConfigEntry } from "@/lib/types";
 
 // Starting a game fetches every selected playlist's full tracklist from
 // Spotify at once — capping the selection keeps that burst reasonable and
 // avoids tripping the API's rate limit.
 const MAX_SELECTED = 12;
 
-export function PlaylistPicker({ playlists }: { playlists: PlaylistOption[] }) {
+export function PlaylistPicker({ playlists }: { playlists: PlaylistConfigEntry[] }) {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const router = useRouter();
   const atLimit = selected.size >= MAX_SELECTED;
@@ -42,8 +37,7 @@ export function PlaylistPicker({ playlists }: { playlists: PlaylistOption[] }) {
       <div className="flex flex-col gap-3">
         {playlists.map((p) => {
           const isSelected = selected.has(p.spotifyId);
-          const isMissing = p.trackCount === null;
-          const isDisabled = isMissing || (!isSelected && atLimit);
+          const isDisabled = !isSelected && atLimit;
           return (
             <motion.button
               key={p.spotifyId}
@@ -59,14 +53,7 @@ export function PlaylistPicker({ playlists }: { playlists: PlaylistOption[] }) {
                   : "border-white/10 bg-white/[0.03] hover:border-white/20"
               }`}
             >
-              <span>
-                <span className="block font-medium">{p.name}</span>
-                <span className="block text-xs text-white/40">
-                  {isMissing
-                    ? "No se encontró esta playlist en Spotify"
-                    : `${p.trackCount} canciones`}
-                </span>
-              </span>
+              <span className="font-medium">{p.name}</span>
               <span
                 className={`h-5 w-5 shrink-0 rounded-full border-2 ${
                   isSelected ? "border-accent bg-accent" : "border-white/20"
