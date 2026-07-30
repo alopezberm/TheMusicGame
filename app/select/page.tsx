@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { PLAYLISTS } from "@/config/playlists";
-import { getPlaylistMeta } from "@/lib/spotify";
+import { getPlaylistMeta, mapWithConcurrency } from "@/lib/spotify";
 import { PlaylistPicker, type PlaylistOption } from "@/components/PlaylistPicker";
 import { LoadingState } from "@/components/LoadingState";
 
@@ -16,18 +16,16 @@ export default function SelectPage() {
     let cancelled = false;
 
     (async () => {
-      const metas = await Promise.all(
-        PLAYLISTS.map(async (p) => {
-          const meta = await getPlaylistMeta(p.spotifyId, session.accessToken!).catch(
-            () => null
-          );
-          return {
-            spotifyId: p.spotifyId,
-            name: p.name,
-            trackCount: meta?.trackCount ?? null,
-          };
-        })
-      );
+      const metas = await mapWithConcurrency(PLAYLISTS, 5, async (p) => {
+        const meta = await getPlaylistMeta(p.spotifyId, session.accessToken!).catch(
+          () => null
+        );
+        return {
+          spotifyId: p.spotifyId,
+          name: p.name,
+          trackCount: meta?.trackCount ?? null,
+        };
+      });
       if (!cancelled) setPlaylists(metas);
     })();
 

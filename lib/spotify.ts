@@ -8,10 +8,15 @@ class SpotifyApiError extends Error {
   }
 }
 
+function delay(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 async function spotifyFetch<T>(
   path: string,
   accessToken: string,
-  init?: RequestInit
+  init?: RequestInit,
+  retriesLeft = 3
 ): Promise<T | null> {
   const response = await fetch(`${API_BASE}${path}`, {
     ...init,
@@ -24,6 +29,14 @@ async function spotifyFetch<T>(
 
   if (response.status === 204) return null;
 
+  // Spotify's rate limit — back off for the time it tells us and retry,
+  // instead of treating a busy moment as "this playlist doesn't exist".
+  if (response.status === 429 && retriesLeft > 0) {
+    const waitSeconds = Number(response.headers.get("retry-after")) || 1;
+    await delay(waitSeconds * 1000);
+    return spotifyFetch<T>(path, accessToken, init, retriesLeft - 1);
+  }
+
   if (!response.ok) {
     throw new SpotifyApiError(
       response.status,
@@ -33,6 +46,28 @@ async function spotifyFetch<T>(
 
   const text = await response.text();
   return text ? (JSON.parse(text) as T) : null;
+}
+
+// Runs async work over `items` with at most `limit` in flight at once —
+// firing dozens of Spotify requests in one Promise.all is what triggers the
+// rate limit above in the first place.
+export async function mapWithConcurrency<T, R>(
+  items: T[],
+  limit: number,
+  fn: (item: T) => Promise<R>
+): Promise<R[]> {
+  const results: R[] = new Array(items.length);
+  let nextIndex = 0;
+
+  async function worker() {
+    while (nextIndex < items.length) {
+      const current = nextIndex++;
+      results[current] = await fn(items[current]);
+    }
+  }
+
+  await Promise.all(Array.from({ length: Math.min(limit, items.length) }, worker));
+  return results;
 }
 
 function yearFromReleaseDate(releaseDate: string | undefined): number | null {
