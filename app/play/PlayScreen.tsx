@@ -3,7 +3,12 @@
 import { useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSession, signIn } from "next-auth/react";
-import { getAllPlaylistTracks, getDevices, playTrackOnDevice } from "@/lib/spotify";
+import {
+  getAllPlaylistTracks,
+  getDevices,
+  mapWithConcurrency,
+  playTrackOnDevice,
+} from "@/lib/spotify";
 import { shuffle } from "@/lib/shuffle";
 import type { ResolvedTrack, SpotifyDevice, Track } from "@/lib/types";
 import { LoadingState } from "@/components/LoadingState";
@@ -124,8 +129,8 @@ export function PlayScreen() {
     let cancelled = false;
 
     (async () => {
-      const perPlaylist = await Promise.all(
-        playlistIds.map((id) => getAllPlaylistTracks(id, accessToken).catch(() => []))
+      const perPlaylist = await mapWithConcurrency(playlistIds, 5, (id) =>
+        getAllPlaylistTracks(id, accessToken).catch(() => [])
       );
       const merged = new Map<string, Track>();
       for (const list of perPlaylist) for (const t of list) merged.set(t.id, t);

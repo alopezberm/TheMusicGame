@@ -10,15 +10,24 @@ export interface PlaylistOption {
   trackCount: number | null;
 }
 
+// Starting a game fetches every selected playlist's full tracklist from
+// Spotify at once — capping the selection keeps that burst reasonable and
+// avoids tripping the API's rate limit.
+const MAX_SELECTED = 12;
+
 export function PlaylistPicker({ playlists }: { playlists: PlaylistOption[] }) {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const router = useRouter();
+  const atLimit = selected.size >= MAX_SELECTED;
 
   function toggle(id: string) {
     setSelected((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
+      if (next.has(id)) {
+        next.delete(id);
+      } else if (next.size < MAX_SELECTED) {
+        next.add(id);
+      }
       return next;
     });
   }
@@ -34,15 +43,16 @@ export function PlaylistPicker({ playlists }: { playlists: PlaylistOption[] }) {
         {playlists.map((p) => {
           const isSelected = selected.has(p.spotifyId);
           const isMissing = p.trackCount === null;
+          const isDisabled = isMissing || (!isSelected && atLimit);
           return (
             <motion.button
               key={p.spotifyId}
               type="button"
-              disabled={isMissing}
-              whileTap={{ scale: isMissing ? 1 : 0.98 }}
+              disabled={isDisabled}
+              whileTap={{ scale: isDisabled ? 1 : 0.98 }}
               onClick={() => toggle(p.spotifyId)}
               className={`flex items-center justify-between rounded-2xl border px-5 py-4 text-left transition-colors ${
-                isMissing
+                isDisabled
                   ? "border-white/5 bg-white/[0.02] opacity-40"
                   : isSelected
                   ? "border-accent bg-accent/10"
@@ -66,6 +76,10 @@ export function PlaylistPicker({ playlists }: { playlists: PlaylistOption[] }) {
           );
         })}
       </div>
+
+      <p className="text-center text-xs text-white/40">
+        {selected.size} / {MAX_SELECTED} seleccionadas
+      </p>
 
       <motion.button
         type="button"
