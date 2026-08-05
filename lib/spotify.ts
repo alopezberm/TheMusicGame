@@ -157,3 +157,14 @@ export async function pausePlayback(
     method: "PUT",
   });
 }
+
+// No uris/context in the body — Spotify resumes the current track from
+// wherever it was paused, instead of restarting it from the beginning.
+export async function resumePlayback(
+  accessToken: string,
+  deviceId: string
+): Promise<void> {
+  await spotifyFetch(`/me/player/play?device_id=${deviceId}`, accessToken, {
+    method: "PUT",
+  });
+}

@@ -7,6 +7,8 @@ import type { ResolvedTrack, SpotifyDevice } from "@/lib/types";
 interface Props {
   track: ResolvedTrack | null;
   onNext: () => void;
+  onPause: () => Promise<void>;
+  onResume: () => Promise<void>;
   devices: SpotifyDevice[];
   selectedDeviceId: string | null;
   onSelectDevice: (deviceId: string) => void;
@@ -14,17 +16,30 @@ interface Props {
 }
 
 // Keyed by track id from the parent, so a new track remounts this component
-// and resets `revealed` for free — no effect needed to reset it manually.
+// and resets `revealed`/`isPaused` for free — no effect needed to reset them.
 export function GameStage({
   track,
   onNext,
+  onPause,
+  onResume,
   devices,
   selectedDeviceId,
   onSelectDevice,
   errorMsg,
 }: Props) {
   const [revealed, setRevealed] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
   const selectedDevice = devices.find((d) => d.id === selectedDeviceId);
+
+  function togglePause() {
+    if (isPaused) {
+      setIsPaused(false);
+      onResume();
+    } else {
+      setIsPaused(true);
+      onPause();
+    }
+  }
 
   return (
     <main className="flex flex-1 flex-col items-center justify-between px-6 py-10">
@@ -101,13 +116,27 @@ export function GameStage({
         </AnimatePresence>
       </div>
 
-      <button
-        type="button"
-        onClick={onNext}
-        className="w-full max-w-sm rounded-full bg-white/5 px-6 py-4 text-base font-semibold transition-colors hover:bg-white/10"
-      >
-        Siguiente canción →
-      </button>
+      <div className="flex w-full max-w-sm flex-col gap-3">
+        <button
+          type="button"
+          onClick={togglePause}
+          className={`w-full rounded-full border px-6 py-3 text-sm font-semibold transition-colors ${
+            isPaused
+              ? "border-accent-2 text-accent-2 hover:bg-accent-2/10"
+              : "border-white/15 text-white/70 hover:border-white/30 hover:text-white"
+          }`}
+        >
+          {isPaused ? "▶ Reanudar" : "⏸ Parar canción"}
+        </button>
+
+        <button
+          type="button"
+          onClick={onNext}
+          className="w-full rounded-full bg-white/5 px-6 py-4 text-base font-semibold transition-colors hover:bg-white/10"
+        >
+          Siguiente canción →
+        </button>
+      </div>
     </main>
   );
 }

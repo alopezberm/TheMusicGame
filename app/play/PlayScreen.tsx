@@ -7,9 +7,11 @@ import {
   getAllPlaylistTracks,
   getDevices,
   mapWithConcurrency,
+  pausePlayback,
   playTrackOnDevice,
+  resumePlayback,
 } from "@/lib/spotify";
-import { shuffle } from "@/lib/shuffle";
+import { buildBalancedQueue } from "@/lib/shuffle";
 import type { ResolvedTrack, SpotifyDevice, Track } from "@/lib/types";
 import { LoadingState } from "@/components/LoadingState";
 import { DeviceGate } from "@/components/DeviceGate";
@@ -23,6 +25,7 @@ interface YearInfo {
 interface StoredGameState {
   queue: Track[];
   index: number;
+  buckets: Track[][];
 }
 
 async function resolveYear(track: Track): Promise<YearInfo> {
@@ -71,6 +74,9 @@ export function PlayScreen() {
   const [tracksLoading, setTracksLoading] = useState(!initialGameState);
   const [queue, setQueue] = useState<Track[]>(initialGameState?.queue ?? []);
   const [queueIndex, setQueueIndex] = useState(initialGameState?.index ?? 0);
+  // Raw per-playlist track lists, kept around so the queue can be rebuilt
+  // (still balanced across playlists) once it runs out, without refetching.
+  const bucketsRef = useRef<Track[][]>(initialGameState?.buckets ?? []);
 
   const [devices, setDevices] = useState<SpotifyDevice[]>([]);
   const [selectedDeviceId, setSelectedDeviceId] = useState<string | null>(null);
@@ -132,11 +138,10 @@ export function PlayScreen() {
       const perPlaylist = await mapWithConcurrency(playlistIds, 5, (id) =>
         getAllPlaylistTracks(id, accessToken).catch(() => [])
       );
-      const merged = new Map<string, Track>();
-      for (const list of perPlaylist) for (const t of list) merged.set(t.id, t);
-      const shuffled = shuffle(Array.from(merged.values()));
+      bucketsRef.current = perPlaylist;
+      const balanced = buildBalancedQueue(perPlaylist);
       if (!cancelled) {
-        setQueue(shuffled);
+        setQueue(balanced);
         setQueueIndex(0);
         setTracksLoading(false);
       }
@@ -150,7 +155,10 @@ export function PlayScreen() {
   // Keep the in-progress game persisted across accidental refreshes.
   useEffect(() => {
     if (queue.length > 0) {
-      sessionStorage.setItem(storageKey, JSON.stringify({ queue, index: queueIndex }));
+      sessionStorage.setItem(
+        storageKey,
+        JSON.stringify({ queue, index: queueIndex, buckets: bucketsRef.current })
+      );
     }
   }, [queue, queueIndex, storageKey]);
 
@@ -184,15 +192,25 @@ export function PlayScreen() {
   function nextTrack() {
     const nextIndex = queueIndex + 1;
     if (nextIndex >= queue.length) {
-      let reshuffled = shuffle(queue);
-      if (reshuffled.length > 1 && reshuffled[0].id === queue[queue.length - 1]?.id) {
-        reshuffled = [reshuffled[1], reshuffled[0], ...reshuffled.slice(2)];
+      let rebuilt = buildBalancedQueue(bucketsRef.current);
+      if (rebuilt.length > 1 && rebuilt[0].id === queue[queue.length - 1]?.id) {
+        rebuilt = [rebuilt[1], rebuilt[0], ...rebuilt.slice(2)];
       }
-      setQueue(reshuffled);
+      setQueue(rebuilt);
       setQueueIndex(0);
       return;
     }
     setQueueIndex(nextIndex);
+  }
+
+  async function pauseCurrent() {
+    if (!accessToken || !selectedDeviceId) return;
+    await pausePlayback(accessToken, selectedDeviceId).catch(() => {});
+  }
+
+  async function resumeCurrent() {
+    if (!accessToken || !selectedDeviceId) return;
+    await resumePlayback(accessToken, selectedDeviceId).catch(() => {});
   }
 
   function selectDevice(deviceId: string) {
@@ -259,6 +277,8 @@ export function PlayScreen() {
       key={currentTrack?.id ?? "none"}
       track={resolved}
       onNext={nextTrack}
+      onPause={pauseCurrent}
+      onResume={resumeCurrent}
       devices={devices}
       selectedDeviceId={selectedDeviceId}
       onSelectDevice={selectDevice}
